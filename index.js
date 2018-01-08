@@ -9,7 +9,7 @@ var State = {
   height: 4,
   width: 4,
   score: 0,
-  board: new Array(4),
+  board: new Array(this.height),
   getSquare: function (i, j) {
     return this.board[i][j];
   },
@@ -50,17 +50,7 @@ function moveRight () {
   for (var pass = 0; pass < State.width - 1; pass++) {
     for (var i = 0; i < State.height; i++) {
       for (var j = State.width - 1; j > 0; j--) {
-        cur = State.getSquare(i, j);
-        left = State.getSquare(i, j - 1);
-        if (cur.value === 0) {
-          cur.value = left.value;
-          left.value = 0;
-        } else if (cur.value === left.value && !cur.combined && !left.combined) {
-          cur.value *= 2;
-          State.score += cur.value;
-          left.value = 0;
-          cur.combined = true;
-        }
+        mv(i, j, 0, -1);
       }
     }
   }
@@ -70,17 +60,7 @@ function moveLeft () {
   for (var pass = 0; pass < State.width - 1; pass++) {
     for (var i = 0; i < State.height; i++) {
       for (var j = 0; j < State.width - 1; j++) {
-        cur = State.getSquare(i, j);
-        right = State.getSquare(i, j + 1);
-        if (cur.value === 0) {
-          cur.value = right.value;
-          right.value = 0;
-        } else if (cur.value === right.value && !cur.combined && !right.combined) {
-          cur.value *= 2;
-          State.score += cur.value;          
-          right.value = 0;
-          cur.combined = true;
-        }
+        mv(i, j, 0, 1);
       }
     }
   }
@@ -90,17 +70,7 @@ function moveUp () {
   for (var pass = 0; pass < State.height - 1; pass++) {
     for (var i = 0; i < State.height - 1; i++) {
       for (var j = 0; j < State.width; j++) {
-        cur = State.getSquare(i, j);
-        down = State.getSquare(i + 1, j);
-        if (cur.value === 0) {
-          cur.value = down.value;
-          down.value = 0;
-        } else if (cur.value === down.value && !cur.combined && !down.combined) {
-          cur.value *= 2;
-          State.score += cur.value;          
-          down.value = 0;
-          cur.combined = true;
-        }
+        mv(i, j, 1, 0);
       }
     }
   }
@@ -110,19 +80,23 @@ function moveDown () {
   for (var pass = 0; pass < State.height - 1; pass++) {
     for (var i = State.height - 1; i > 0; i--) {
       for (var j = 0; j < State.width; j++) {
-        cur = State.getSquare(i, j);
-        up = State.getSquare(i - 1, j);
-        if (cur.value === 0) {
-          cur.value = up.value;
-          up.value = 0;
-        } else if (cur.value === up.value && !cur.combined && !up.combined) {
-          cur.value *= 2;
-          State.score += cur.value;          
-          up.value = 0;
-          cur.combined = true;
-        }
+        mv(i, j, -1, 0);
       }
     }
+  }
+}
+
+function mv (i, j, di, dj) {
+  cur = State.getSquare(i, j);
+  adj = State.getSquare(i + di, j + dj);
+  if (cur.value === 0) {
+    cur.value = adj.value;
+    adj.value = 0;
+  } else if (cur.value === adj.value && !cur.combined && !adj.combined) {
+    cur.value *= 2;
+    State.score += cur.value;          
+    adj.value = 0;
+    cur.combined = true;
   }
 }
 
