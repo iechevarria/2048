@@ -8,6 +8,7 @@ function Square () {
 var State = {
   height: 4,
   width: 4,
+  score: 0,
   board: new Array(4),
   getSquare: function (i, j) {
     return this.board[i][j];
@@ -21,10 +22,12 @@ var State = {
     }
   },
   print: function () {
+    console.log('score: ' + this.score); 
     for (var i = 0; i < this.height; i++) {
       var myStr = '';      
       for (var j = 0; j < this.width; j++) {
-        myStr += this.board[i][j].value + ' ';
+        if (this.board[i][j].value != 0) { myStr += this.board[i][j].value + ' '; }
+        else { myStr += '. '; }
       }
       console.log(myStr);
     }
@@ -54,6 +57,7 @@ function moveRight () {
           left.value = 0;
         } else if (cur.value === left.value && !cur.combined && !left.combined) {
           cur.value *= 2;
+          State.score += cur.value;
           left.value = 0;
           cur.combined = true;
         }
@@ -73,7 +77,48 @@ function moveLeft () {
           right.value = 0;
         } else if (cur.value === right.value && !cur.combined && !right.combined) {
           cur.value *= 2;
+          State.score += cur.value;          
           right.value = 0;
+          cur.combined = true;
+        }
+      }
+    }
+  }
+}
+
+function moveUp () {
+  for (var pass = 0; pass < State.height - 1; pass++) {
+    for (var i = 0; i < State.height - 1; i++) {
+      for (var j = 0; j < State.width; j++) {
+        cur = State.getSquare(i, j);
+        down = State.getSquare(i + 1, j);
+        if (cur.value === 0) {
+          cur.value = down.value;
+          down.value = 0;
+        } else if (cur.value === down.value && !cur.combined && !down.combined) {
+          cur.value *= 2;
+          State.score += cur.value;          
+          down.value = 0;
+          cur.combined = true;
+        }
+      }
+    }
+  }
+}
+
+function moveDown () {
+  for (var pass = 0; pass < State.height - 1; pass++) {
+    for (var i = State.height - 1; i > 0; i--) {
+      for (var j = 0; j < State.width; j++) {
+        cur = State.getSquare(i, j);
+        up = State.getSquare(i - 1, j);
+        if (cur.value === 0) {
+          cur.value = up.value;
+          up.value = 0;
+        } else if (cur.value === up.value && !cur.combined && !up.combined) {
+          cur.value *= 2;
+          State.score += cur.value;          
+          up.value = 0;
           cur.combined = true;
         }
       }
@@ -97,8 +142,14 @@ State.getSquare(0, 0).value = 2;
 State.getSquare(0, 1).value = 2;
 State.getSquare(0, 2).value = 2;
 State.getSquare(0, 3).value = 2;
+State.getSquare(1, 3).value = 2;
+State.getSquare(3, 3).value = 2;
+State.print();
+move('d');
+State.print();
+move('r');
 State.print();
 move('l');
 State.print();
-move('r');
+move('u');
 State.print();
