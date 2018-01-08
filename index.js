@@ -9,18 +9,21 @@ var State = {
   height: 4,
   width: 4,
   score: 0,
+
   board: new Array(this.height),
   getSquare: function (i, j) {
     return this.board[i][j];
   },
+  
   reset: function () {
     for (var i = 0; i < this.height; i++) {
-      this.board[i] = new Array(4);
+      this.board[i] = new Array(this.width);
       for (var j = 0; j < this.width; j++) {
         this.board[i][j] = new Square();
       }
     }
   },
+  
   print: function () {
     console.log('score: ' + this.score); 
     for (var i = 0; i < this.height; i++) {
@@ -39,51 +42,39 @@ var State = {
 /* Logic */
 
 function move (direction) {
-  if (direction === 'l') { moveLeft(); }
-  else if (direction === 'r') { moveRight(); }
-  else if (direction === 'u') { moveUp(); }
-  else if (direction === 'd') { moveDown();}
+  if (direction === 'l' || direction === 'r') {
+    for (var pass = 0; pass < State.width - 1; pass++) {
+      for (var i = 0; i < State.height; i++) {
+        if (direction === 'l') {
+          for (var j = 0; j < State.width - 1; j++) {
+            mv(i, j, 0, 1);
+          }
+        } else {
+          for (var j = State.width - 1; j > 0; j--) {
+            mv(i, j, 0, -1);
+          }
+        }
+      }
+    }
+  } 
+  else if (direction === 'u' || direction === 'd') {
+    for (var pass = 0; pass < State.height - 1; pass++) {
+      for (var j = 0; j < State.width; j++) {
+        if (direction === 'u') {
+          for (var i = 0; i < State.height - 1; i++) {
+            mv(i, j, 1, 0);
+          }
+        } else {
+          for (var i = State.height - 1; i > 0; i--) {
+            mv(i, j, -1, 0);
+          }
+        }
+      }
+    }
+  }
   resetCombined();
-}
-
-function moveRight () {
-  for (var pass = 0; pass < State.width - 1; pass++) {
-    for (var i = 0; i < State.height; i++) {
-      for (var j = State.width - 1; j > 0; j--) {
-        mv(i, j, 0, -1);
-      }
-    }
-  }
-}
-
-function moveLeft () {
-  for (var pass = 0; pass < State.width - 1; pass++) {
-    for (var i = 0; i < State.height; i++) {
-      for (var j = 0; j < State.width - 1; j++) {
-        mv(i, j, 0, 1);
-      }
-    }
-  }
-}
-
-function moveUp () {
-  for (var pass = 0; pass < State.height - 1; pass++) {
-    for (var i = 0; i < State.height - 1; i++) {
-      for (var j = 0; j < State.width; j++) {
-        mv(i, j, 1, 0);
-      }
-    }
-  }
-}
-
-function moveDown () {
-  for (var pass = 0; pass < State.height - 1; pass++) {
-    for (var i = State.height - 1; i > 0; i--) {
-      for (var j = 0; j < State.width; j++) {
-        mv(i, j, -1, 0);
-      }
-    }
-  }
+  addSquare();
+  checkSolvability();
 }
 
 function mv (i, j, di, dj) {
@@ -107,6 +98,10 @@ function resetCombined () {
     }
   }
 }
+
+function checkSolvability () {}
+
+function addSquare () {}
 
 
 /* View */
