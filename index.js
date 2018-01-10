@@ -74,7 +74,7 @@ function move (direction) {
   }
   resetCombined();
   addSquare();
-  isSolvable();
+  validMoveExists();
 }
 
 function mv (i, j, di, dj) {
@@ -99,23 +99,28 @@ function resetCombined () {
   }
 }
 
-function isSolvable () {
-  ct = 0;
+function validMoveExists () {
+  var moveExists = false;
   for (var i = 0; i < State.height - 1; i++) {
     for (var j = 0; j < State.width - 1; j++) {
       if (State.getSquare(i, j).value === 0 || State.getSquare(i + 1, j).value === 0 || State.getSquare(i, j + 1).value === 0 ||
           State.getSquare(i, j).value === State.getSquare(i + 1, j).value ||
           State.getSquare(i, j).value === State.getSquare(i, j + 1).value) 
       {
-        ct ++;
+        moveExists = true;
       }
     }
   }
-  return ct > 0;
+  if (State.getSquare(State.height - 1, State.width - 1).value === 0 ||
+      State.getSquare(State.height - 1, State.width - 1).value === State.getSquare(State.height - 2, State.width - 1).value ||
+      State.getSquare(State.height - 1, State.width - 1).value === State.getSquare(State.height - 1, State.width - 2).value)
+  {
+    moveExists = true;
+  }
+  return moveExists;
 }
 
 function addSquare () {}
-
 
 /* View */
 
@@ -135,3 +140,4 @@ move('l');
 State.print();
 move('u');
 State.print();
+console.log(validMoveExists());
