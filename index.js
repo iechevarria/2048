@@ -74,7 +74,7 @@ function move (direction) {
   }
   resetCombined();
   addSquare();
-  checkSolvability();
+  isSolvable();
 }
 
 function mv (i, j, di, dj) {
@@ -99,7 +99,20 @@ function resetCombined () {
   }
 }
 
-function checkSolvability () {}
+function isSolvable () {
+  ct = 0;
+  for (var i = 0; i < State.height - 1; i++) {
+    for (var j = 0; j < State.width - 1; j++) {
+      if (State.getSquare(i, j).value === 0 || State.getSquare(i + 1, j).value === 0 || State.getSquare(i, j + 1).value === 0 ||
+          State.getSquare(i, j).value === State.getSquare(i + 1, j).value ||
+          State.getSquare(i, j).value === State.getSquare(i, j + 1).value) 
+      {
+        ct ++;
+      }
+    }
+  }
+  return ct > 0;
+}
 
 function addSquare () {}
 
