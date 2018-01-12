@@ -124,6 +124,30 @@ function addSquare () {}
 
 /* View */
 
+var upPressed = false;
+var downPressed = false;
+
+window.onkeydown = function (e) {
+  var key = e.keyCode ? e.keyCode : e.which;
+  if (key === 38) {
+    upPressed = true;
+  } else if (key === 40) {
+    downPressed = true;
+  } 
+};
+
+window.onkeyup = function (e) {
+  var key = e.keyCode ? e.keyCode : e.which;
+  if (key === 38 && upPressed) {
+    move('u');
+    upPressed = false;
+  } else if (key === 40 && downPressed) {
+    move('d');
+    downPressed = false;
+  }
+};
+
+
 State.reset();
 State.getSquare(0, 0).value = 2;
 State.getSquare(0, 1).value = 2;
