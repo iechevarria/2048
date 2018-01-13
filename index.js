@@ -129,8 +129,12 @@ var downPressed = false;
 
 window.onkeydown = function (e) {
   var key = e.keyCode ? e.keyCode : e.which;
-  if (key === 38) {
+  if (key === 37) {
+    leftPressed = true;
+  } else if (key === 38) {
     upPressed = true;
+  } else if (key === 39) {
+    rightPressed = true;
   } else if (key === 40) {
     downPressed = true;
   } 
@@ -138,9 +142,15 @@ window.onkeydown = function (e) {
 
 window.onkeyup = function (e) {
   var key = e.keyCode ? e.keyCode : e.which;
-  if (key === 38 && upPressed) {
+  if (key == 37 && leftPressed) {
+    move('l');
+    leftPressed = false;
+  } else if (key === 38 && upPressed) {
     move('u');
     upPressed = false;
+  } else if (key === 39 && rightPressed) {
+    move('r');
+    rightPressed = false;
   } else if (key === 40 && downPressed) {
     move('d');
     downPressed = false;
