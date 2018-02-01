@@ -88,7 +88,7 @@ var State = {
 
 var Logic = {
   step: function (direction) {
-    tmp = new Board(State.size);
+    var tmp = new Board(State.size);
     tmp.copy(State.board);
     State.score += this.move(direction, State.board);
     if (!tmp.equals(State.board)) {
@@ -97,6 +97,7 @@ var Logic = {
       if (!this.validMoveExists()) {
         State.reset(); 
         State.print();  
+        console.log("No valid moves");
       }
       return true;
     }
@@ -104,7 +105,7 @@ var Logic = {
   },
 
   move: function (direction, board) {
-    score = 0;
+    var score = 0;
     for (var pass = 0; pass < State.size - 1; pass++) {
       for (var n = 0; n < State.size; n++) {
         if (direction === 'l') {
@@ -131,9 +132,9 @@ var Logic = {
   },
 
   combine: function (i, j, di, dj, board) {
-    score = 0;
-    cur = board.getSquare(i, j);
-    adj = board.getSquare(i + di, j + dj);
+    var score = 0;
+    var cur = board.getSquare(i, j);
+    var adj = board.getSquare(i + di, j + dj);
     if (cur.value === 0) {
       cur.value = adj.value;
       adj.value = 0;
@@ -155,21 +156,25 @@ var Logic = {
   },
 
   validMoveExists: function () {
-    tmp1 = new Board(State.size);
-    tmp2 = new Board(State.size);
+    var tmp1 = new Board(State.size);
+    var tmp2 = new Board(State.size);
     tmp1.copy(State.board);
     tmp2.copy(State.board);
     this.move('l', tmp1);
+    if (!tmp1.equals(tmp2)) { return true; }
     this.move('u', tmp1);
+    if (!tmp1.equals(tmp2)) { return true; }
     this.move('r', tmp1);
+    if (!tmp1.equals(tmp2)) { return true; }
     this.move('d', tmp1);
-    return !tmp1.equals(tmp2);
+    if (!tmp1.equals(tmp2)) { return true; }
+    return false;
   },
 
   addSquare: function () {
-    filled = false;
-    ct = 0;
-    while (!filled && ct < 1000) {
+    var filled = false;
+    var ct = 0;
+    while (!filled && ct < 10000) {
       var i = Math.floor(Math.random() * State.size);
       var j = Math.floor(Math.random() * State.size);
       if (State.getValue(i, j) === 0) {
@@ -188,14 +193,42 @@ var Logic = {
 
 /* View */
 
+var context = document.getElementById('canvas').getContext('2d');
+var CANVAS_WIDTH = 600;
+var CANVAS_HEIGHT = 600;
+var border = 10;
+
+function draw () {
+  context.fillStyle = '#888';
+  context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+  var px = (CANVAS_WIDTH - ((State.size + 1) * border)) / State.size;
+
+  for (var i = 0; i < State.size; i++) {
+    for (var j = 0; j < State.size; j++) {
+      if (State.getValue(i, j) > 0) {
+        context.fillStyle = '#000';
+        context.fillRect((j + 1) * 10 + j * px, (i + 1) * border + i * px, px, px);
+        context.fillStyle = 'rgba(255, ' + (240 - 15 * Math.log2(State.getValue(i, j))).toString() + ', ' + (230 - 10 * Math.log2(State.getValue(i, j))).toString() + ', 1)';
+        context.fillRect((j + 1) * 10 + j * px + 2, (i + 1) * border + i * px + 2, px - 4, px - 4);
+        context.fillStyle = '#000';
+        context.font = '32px Courier';
+        context.textAlign = 'center';
+        context.fillText(State.getValue(i, j).toString(), (j + 1) * 10 + (j + 0.5) * px, (i + 1) * border + (i + 0.55) * px);
+      }
+    }
+  }
+}
+
 var upPressed = false;
 var downPressed = false;
 var leftPressed = false;
 var rightPressed = false;
 
 window.onkeydown = function (e) {
+  var update = false;
   var key = e.keyCode ? e.keyCode : e.which;
-  if (key === 37 && !leftPressed) {
+  if (key === 37 && !leftPressed) { 
     update = Logic.step('l');
     leftPressed = true;
   } else if (key === 38 && !upPressed) {
@@ -208,6 +241,7 @@ window.onkeydown = function (e) {
     update = Logic.step('d');
     downPressed = true;
   } 
+  if (update) { draw(); } 
 };
 
 window.onkeyup = function (e) {
@@ -218,5 +252,7 @@ window.onkeyup = function (e) {
   else if (key === 40) { downPressed = false; }
 };
 
+
 State.reset();
 State.print();
+draw();
