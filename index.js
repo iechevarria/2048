@@ -52,7 +52,9 @@ var State = {
   score: 0,
 
   reset: function () {
-     this.board = new Board(this.size);
+    this.score = 0;
+    this.board = new Board(this.size);
+    Logic.addSquare();
   },
 
   getSquare: function (i, j) {
@@ -82,6 +84,8 @@ var State = {
 };
 
 
+/* Logic */
+
 var Logic = {
   step: function (direction) {
     tmp = new Board(State.size);
@@ -90,7 +94,10 @@ var Logic = {
     if (!tmp.equals(State.board)) {
       this.addSquare();
       State.print();  
-      if (!this.validMoveExists()) { State.reset(); }
+      if (!this.validMoveExists()) {
+        State.reset(); 
+        State.print();  
+      }
       return true;
     }
     return false;
@@ -162,7 +169,7 @@ var Logic = {
   addSquare: function () {
     filled = false;
     ct = 0;
-    while (!filled && ct < 10000) {
+    while (!filled && ct < 1000) {
       var i = Math.floor(Math.random() * State.size);
       var j = Math.floor(Math.random() * State.size);
       if (State.getValue(i, j) === 0) {
@@ -212,5 +219,4 @@ window.onkeyup = function (e) {
 };
 
 State.reset();
-State.setValue(1, 1, 2);
 State.print();
