@@ -24,19 +24,19 @@ Board.prototype.copy = function (board) {
       this.arr[i][j].value = board.getValue(i, j);
     }
   }
-}
+};
 
 Board.prototype.getSquare = function (i, j) {
   return this.arr[i][j];
-}
+};
 
 Board.prototype.getValue = function (i, j) {
   return this.arr[i][j].value;
-}
+};
 
 Board.prototype.setValue = function (i, j, val) {
   this.arr[i][j].value = val;
-}
+};
 
 Board.prototype.equals = function (board) {
   for (var i = 0; i < this.size; i++) {
@@ -45,7 +45,7 @@ Board.prototype.equals = function (board) {
     }
   }
   return true;
-}
+};
 
 
 var State = {
@@ -54,6 +54,7 @@ var State = {
   validMoveExists: true,
 
   reset: function () {
+    if (this.getHighScore() === null) { this.setHighScore(0); }
     this.score = 0;
     this.validMoveExists = true;
     this.board = new Board(this.size);
@@ -70,6 +71,19 @@ var State = {
 
   setValue: function (i, j, val) {
     this.board.setValue(i, j, val);
+  },
+
+  incrementScore: function (score) {
+    this.score += score;
+    if (parseInt(this.getHighScore(), 10) < this.score) { this.setHighScore(this.score); }
+  },
+
+  getHighScore: function () {
+    return localStorage.getItem('high_score');
+  },
+
+  setHighScore: function (score) {
+    localStorage.setItem('high_score', score.toString());
   },
     
   print: function () {
@@ -98,7 +112,7 @@ var Logic = {
   step: function (direction) {
     var tmp = new Board(State.size);
     tmp.copy(State.board);
-    State.score += this.move(direction, State.board);
+    State.incrementScore(this.move(direction, State.board));
     if (!tmp.equals(State.board)) {
       this.addSquare();
       State.print();  
@@ -237,7 +251,7 @@ function draw () {
     context.fillText('Press r to restart.', CANVAS_WIDTH * 0.5, CANVAS_HEIGHT * 0.6);
   }
 
-  document.getElementById('score').innerHTML = State.score.toString();
+  document.getElementById('score').innerHTML = 'Current: ' + State.score.toString() + '&nbsp&nbsp&nbsp&nbsp High: ' + State.getHighScore();
 }
 
 
